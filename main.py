@@ -48,7 +48,7 @@ class ScenarioListBase(BaseModel):
 # 대사 
 class ScenarioInfoBase(BaseModel):
     scenario_name: str
-    script_list: str
+    script_list: list[str]
     script_order_list: str
 
 # 분석용
