@@ -44,7 +44,7 @@ class CharacterInfoBase(BaseModel):
 # 시나리오
 class ScenarioListBase(BaseModel):
     scenario_name: str  #따라서 models에서 text라고 썼어도 여기서는 str로 작성해야한다.
-    NPC_name1: Optional[str] = None #원 클래스에서 npc가 삭제되면 그자리를 null로 하도록 세팅되어있음을 고려. (모듈 임포트해야함함)
+    NPC_name1: Optional[str] = None #원 클래스에서 npc가 삭제되면 그자리를 null로 하도록 세팅되어있음을 고려. (모듈 임포트해야함)
     NPC_name2: Optional[str] = None
     class Config:
         orm_mode = True
