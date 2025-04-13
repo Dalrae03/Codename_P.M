@@ -35,21 +35,27 @@ db_dependency = Annotated[Session, Depends(get_db)]
 # 데이터 검증 스키마
 # 캐릭터 정보
 class CharacterInfoBase(BaseModel):
-    NPC_name: str
-    personality: str #SQLAlchemy에서는 text타입이 존재하지만 Pydantic(BaseModel)에서는 text타입이 존재하지 않는다.
-    speech: str #따라서 models에서 text라고 썼어도 여기서는 str로 작성해야한다.
+    NPC_name: str  #SQLAlchemy에서는 text타입이 존재하지만 Pydantic(BaseModel)에서는 text타입이 존재하지 않는다.
+    personality: list[str]
+    speech: list[str]
+    class Config:
+        orm_mode = True
 
 # 시나리오
 class ScenarioListBase(BaseModel):
-    scenario_name: str
+    scenario_name: str  #따라서 models에서 text라고 썼어도 여기서는 str로 작성해야한다.
     NPC_name1: Optional[str] = None #원 클래스에서 npc가 삭제되면 그자리를 null로 하도록 세팅되어있음을 고려. (모듈 임포트해야함함)
     NPC_name2: Optional[str] = None
+    class Config:
+        orm_mode = True
 
 # 대사 
 class ScenarioInfoBase(BaseModel):
     scenario_name: str
-    script_list: list[str]
-    script_order_list: str
+    script_list: list[str]  #리스트 형태 받기
+    script_order_list: list[str]
+    class Config:
+        orm_mode = True
 
 # 분석용
 class AnalyzeListBase(BaseModel):
@@ -59,6 +65,8 @@ class AnalyzeListBase(BaseModel):
     example_answer_B: str
     example_answer_C: str
     example_answer_D: str
+    class Config:
+        orm_mode = True
 
 #분석결과
 class AnalyzeResultBase(BaseModel):
@@ -69,6 +77,8 @@ class AnalyzeResultBase(BaseModel):
     answer_result_C: str
     answer_result_D: str
     total_analysis_results: str
+    class Config:
+        orm_mode = True
 
 
 
@@ -96,9 +106,9 @@ async def create_character(characterInfo:CharacterInfoBase, db: db_dependency):
     db.commit()
 
 # 캐릭터 정보 읽기 api
-@app.get("/characterInfo/{NPC_name}", status_code=status.HTTP_200_OK)
+@app.get("/characterInfo/{NPC_name}", response_model=CharacterInfoBase, status_code=status.HTTP_200_OK)
 async def read_character(NPC_name: str, db: db_dependency):
-    characterInfo = db.query(models.CharacterInfo).filter(models.User.id == NPC_name).first()
+    characterInfo = db.query(models.CharacterInfo).filter(models.CharacterInfo.NPC_name == NPC_name).first()
     if characterInfo is None:
         raise HTTPException(status_code=404, detail='Character not found')
     return characterInfo
@@ -114,7 +124,7 @@ async def create_scenario(scenarioList:ScenarioListBase, db: db_dependency):
     db.commit()
 
 # 시나리오 읽기 api
-@app.get("/ScenarioList/{scenario_name}", status_code=status.HTTP_200_OK)
+@app.get("/ScenarioList/{scenario_name}", response_model=ScenarioListBase, status_code=status.HTTP_200_OK)
 async def read_scenario(scenario_name: str, db: db_dependency):
     scenario = db.query(models.ScenarioList).filter(models.ScenarioList.scenario_name == scenario_name).first()
     if scenario is None:
@@ -132,7 +142,7 @@ async def create_scenarioInfo(scenarioInfo:ScenarioInfoBase, db: db_dependency):
     db.commit()
 
 # 대사 정보 읽기 api (시나리오 이름 뿐만 아니라 뭔가를 하나 더받아야할것같아. 순서 번호같은거... 근데 str임 int가 아닌데?)
-@app.get("/ScenarioInfo/{scenario_name}", status_code=status.HTTP_200_OK)
+@app.get("/ScenarioInfo/{scenario_name}", response_model=ScenarioInfoBase, status_code=status.HTTP_200_OK)
 async def read_scenarioInfo(scenario_name: str, db: db_dependency):
     scenarioInfo = db.query(models.ScenarioInfo).filter(models.ScenarioInfo.scenario_name == scenario_name).first()
     if scenarioInfo is None:
@@ -150,7 +160,7 @@ async def create_analyzeList(analyzeList:AnalyzeListBase, db: db_dependency):
     db.commit()
 
 # 분석 리스트 정보 읽기 api
-@app.get("/AnalyzeList/{scenario_name}", status_code=status.HTTP_200_OK)
+@app.get("/AnalyzeList/{scenario_name}", response_model=AnalyzeListBase, status_code=status.HTTP_200_OK)
 async def read_analyzeList(scenario_name: str, db: db_dependency):
     analyzeList = db.query(models.AnalyzeList).filter(models.AnalyzeList.scenario_name == scenario_name).first()
     if analyzeList is None:
@@ -168,7 +178,7 @@ async def create_analyzeResult(analyzeResult:AnalyzeResultBase, db: db_dependenc
     db.commit()
 
 # 분석 결과 정보 읽기 api
-@app.get("/AnalyzeResult/{scenario_name}", status_code=status.HTTP_200_OK)
+@app.get("/AnalyzeResult/{scenario_name}", response_model=AnalyzeResultBase, status_code=status.HTTP_200_OK)
 async def read_analyzeResult(scenario_name: str, db: db_dependency):
     analyzeResult = db.query(models.AnalyzeResult).filter(models.AnalyzeResult.scenario_name == scenario_name).first()
     if analyzeResult is None:

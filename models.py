@@ -34,10 +34,8 @@ class CharacterInfo(Base):
     __tablename__ = "character_info"
 
     NPC_name = Column(String(100), primary_key=True)
-    personality = Column(Text)
-    speech = Column(Text)
-
-
+    personality = Column(JSON)
+    speech = Column(JSON)
 
 
 # 시나리오 리스트
@@ -60,4 +58,4 @@ class ScenarioInfo(Base):
     # "CASCADE" - 부모 테이블(참조되는 테이블)의 데이터가 삭제될 때, 자식 테이블(참조하는 테이블)의 관련 데이터도 함께 삭제되도록 설정
     scenario_name = Column(String(255), ForeignKey("scenario_list.scenario_name", ondelete="CASCADE"), primary_key=True)
     script_list = Column(JSON)  #list 자료형을 칼럼에 저장하기 위해서 JSON형태로로 직렬화 선택
-    script_order_list = Column(Text)  #변경된 컬럼 추가
+    script_order_list = Column(JSON)  #변경된 컬럼 추가
