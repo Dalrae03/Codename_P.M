@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, JSON
 from database import Base
 
-# 따로 models파일에 넣으려면 relationship import해야함 하단에도 relationship 선언 필요요
+# 따로 models파일에 넣으려면 relationship import해야함 하단에도 relationship 선언 필요
 
 # 분석용 DB
 class AnalyzeList(Base):
@@ -47,8 +47,6 @@ class ScenarioList(Base):  # 시나리오 리스트가 먼저 메인. info가 �
     scenario_name = Column(String(255), unique=True, nullable=False)
     NPC_name1 = Column(String(100), ForeignKey("character_info.NPC_name", ondelete="SET NULL"))
     NPC_name2 = Column(String(100), ForeignKey("character_info.NPC_name", ondelete="SET NULL"))
-
-
 
 
 # 대사 출력
